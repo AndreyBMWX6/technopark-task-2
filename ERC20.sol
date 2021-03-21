@@ -32,6 +32,9 @@ import "./IERC20.sol";
  * allowances. See {IERC20-approve}.
  */
 contract ERC20 is Context, IERC20 {
+	
+	uint constant DAY_IN_SECONDS = 86400;    
+
     mapping (address => uint256) private _balances;
 
     mapping (address => mapping (address => uint256)) private _allowances;
@@ -210,6 +213,10 @@ contract ERC20 is Context, IERC20 {
     function _transfer(address sender, address recipient, uint256 amount) internal virtual {
         require(sender != address(0), "ERC20: transfer from the zero address");
         require(recipient != address(0), "ERC20: transfer to the zero address");
+
+        current_time = now;
+        current_weekday = uint8((current_time / DAY_IN_SECONDS + 4) % 7);
+        require(current_weekday != 5, "ERC20: transfers on Saturday are forbidden")
 
         _beforeTokenTransfer(sender, recipient, amount);
 

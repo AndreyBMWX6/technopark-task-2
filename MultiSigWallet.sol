@@ -24,6 +24,7 @@ contract MultiSigWallet {
      *  Constants
      */
     uint constant public MAX_OWNER_COUNT = 50;
+    uint constant public MAX_VALUE_LIMIT = 66;
 
     /*
      *  Storage
@@ -90,6 +91,12 @@ contract MultiSigWallet {
             && _required <= ownerCount
             && _required != 0
             && ownerCount != 0);
+        _;
+    }
+
+    modifier isLimited(uint transactionId) {
+        require(transactions[transactionId].value <= MAX_VALUE_LIMIT,
+            "Value Limit: Unable to pass more than 66 ETH by one transaction");
         _;
     }
 
@@ -202,6 +209,7 @@ contract MultiSigWallet {
         public
         ownerExists(msg.sender)
         transactionExists(transactionId)
+        isLimited(transactionId)
         notConfirmed(transactionId, msg.sender)
     {
         confirmations[transactionId][msg.sender] = true;
